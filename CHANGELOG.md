@@ -1,7 +1,11 @@
 # Changelog
 
-## 1.0.0
+## v1.0.0 (September 30, 2026)
 
-Initial release. Adds the `valkey` role and its playbooks (`valkey.yml`, `verify.yml`,
-`certify.yml`, `download_packages.yml`) as a Remi-free, EL9/Amazon Linux 2023-only
-alternative to `itential.deployer`'s `redis` role.
+* Add a real Getting Started walkthrough to README
+* Address second round of PR review feedback from kvelarde-itential
+* Fix copyright year across all files (2024 -> 2026)
+* Fix stale copy-paste references found in a proactive self-review
+* Initial commit: itential.valkey collection
+* Initial empty commit
+
