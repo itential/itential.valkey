@@ -6,12 +6,12 @@ Installs and configures Valkey and Valkey Sentinel for use with Itential Platfor
 Remi-free, non-source-compiled alternative to `roles/redis`. Handles authentication (ACL
 users), TLS, replication, Sentinel setup, and firewalld. Unlike `roles/redis`, this role has
 **no source-install path and no Remi dependency** — Valkey is installed exclusively via the
-native OS package repositories (the AppStream module on EL9, Amazon Linux 2023's own core
-repo).
+native OS package repositories (the AppStream module on EL9/EL10, Amazon Linux 2023's own
+core repo).
 
 ## Supported Platforms
 
-**RHEL/Rocky/AlmaLinux 9, and Amazon Linux 2023.** There is no supported install path for EL8
+**RHEL/Rocky/AlmaLinux 9 and 10, and Amazon Linux 2023.** There is no supported install path for EL8
 (no AppStream module stream exists for Valkey on EL8, and this role deliberately does not
 compile from source to reach it — see "Design Decisions" below). A host in `valkey_master` /
 `valkey_replica` / `valkey_sentinel` on any other OS or major version fails
@@ -64,20 +64,22 @@ Same shape as the equivalent `roles/redis` files, `valkey_` prefixed.
 ### install.yml defaults / vars/platform-release-6.yml
 
 There is no `valkey_install_from_source` variable — installation is always via package. The
-only EL major version keys present in `valkey_packages_default` are `"9"` and `"2023"` (both
-value `["valkey"]`, the package name on both platforms). Looking this dict up for any other
-major version does not happen because `validate-vars.yml` already asserts one of those two
-first.
+only EL major version keys present in `valkey_packages_default` are `"9"`, `"10"` and
+`"2023"` (all value `["valkey"]`, the package name on every platform). Looking this dict up for
+any other major version does not happen because `validate-vars.yml` already asserts one of
+those three first.
 
 ### vars/main.yml
 
-`valkey_required_repositories` has a **single entry**: the Rocky/AlmaLinux AppStream mirror
-(`mirrors.rockylinux.org`). Unlike `roles/redis` there is no third-party repository (Remi,
-EPEL, upstream source) to check. This one entry is a best-effort connectivity check — it does
+`valkey_required_repositories` resolves to a **single entry** on EL hosts (the Rocky/AlmaLinux
+AppStream mirror, `mirrors.rockylinux.org`, defined in `valkey_appstream_repositories`) and to an
+empty list on Amazon Linux (which ships Valkey in its own preconfigured core repo and has no
+matching Rocky mirror; it is excluded via `ansible_distribution != 'Amazon'` because Amazon Linux
+reports `ansible_os_family` as RedHat). Unlike `roles/redis` there is no third-party repository
+(Remi, EPEL, upstream source) to check. The EL entry is a best-effort connectivity check — it does
 not distinguish RHEL (which resolves AppStream through its own subscription-manager CDN, not a
-fixed public URL) or Amazon Linux 2023 (which ships Valkey in its own preconfigured core repo)
-from Rocky/Alma; on those platforms the check still runs but isn't actually verifying the repo
-that host will use.
+fixed public URL) from Rocky/Alma, so on RHEL it isn't actually verifying the repo that host will
+use. Its `check_target` uses `AppStream-<ansible_distribution_major_version>` (9 or 10).
 
 ## Design Decisions
 
@@ -91,16 +93,21 @@ These are deliberate departures from a 1:1 mirror of `roles/redis`, decided duri
 - **EL8 is explicitly unsupported**, not silently skipped. No EPEL8 fallback (even though
   EPEL8 does carry a Valkey package) and no source-compile fallback. A host on EL8 fails hard
   in `validate-vars.yml`.
-- **Amazon Linux 2023 is supported alongside EL9** — confirmed AL2023 ships `valkey` natively
-  via its own core repo (no module-stream concept like RHEL's AppStream). Both major version
-  keys (`"9"`, `"2023"`) map to the same `["valkey"]` package list in
+- **Amazon Linux 2023 is supported alongside EL9 and EL10** — confirmed AL2023 ships `valkey`
+  natively via its own core repo (no module-stream concept like RHEL's AppStream). The major
+  version keys (`"9"`, `"10"`, `"2023"`) all map to the same `["valkey"]` package list in
   `vars/platform-release-6.yml`.
+- **EL10 THP tuned profile lives in `/etc/tuned/profiles`.** TuneD 2.27 on EL10 only searches
+  `/usr/lib/tuned/profiles` and `/etc/tuned/profiles` for custom profiles, so `disable-thp.yml`
+  writes the `virtual-guest-no-thp` profile there on EL10 (and to `/etc/tuned` elsewhere) and
+  ensures the `tuned` service is running before calling `tuned-adm`. Mirrors the same fix in
+  `itential.deployer`'s MongoDB role.
 - **Not relocatable.** The Valkey RPM has no `Prefix:` tag, so unlike `roles/redis`'s
   from-source path there is no way to install to a non-default location on either supported
   platform. `validate-vars.yml`'s directory-override assert (see above) is a hard requirement,
   not just this role's own preference.
-- **Version is whatever the OS's own package repository currently resolves to** (8.0.7 on EL9
-  AppStream as of this writing) — not a specific upstream tag pinned via source tarball, unlike
+- **Version is whatever the OS's own package repository currently resolves to** (8.0.x on EL9 and
+  EL10 AppStream as of this writing) — not a specific upstream tag pinned via source tarball, unlike
   `redis_source_url`.
 - **No role-level SELinux configuration.** Confirmed via the upstream
   `fedora-selinux/selinux-policy` `redis.fc` file: it already equivalences standard Valkey
@@ -129,9 +136,9 @@ is protocol- and config-compatible — only comments and variable names were upd
 
 | Group | Role |
 |-------|------|
-| `valkey_master` | Primary data node (EL9 or Amazon Linux 2023 only) |
-| `valkey_replica` | Secondary data nodes (EL9 or Amazon Linux 2023 only) |
-| `valkey_sentinel` | Sentinel nodes (EL9 or Amazon Linux 2023 only) |
+| `valkey_master` | Primary data node (EL9, EL10 or Amazon Linux 2023 only) |
+| `valkey_replica` | Secondary data nodes (EL9, EL10 or Amazon Linux 2023 only) |
+| `valkey_sentinel` | Sentinel nodes (EL9, EL10 or Amazon Linux 2023 only) |
 
 ## Collection Context
 

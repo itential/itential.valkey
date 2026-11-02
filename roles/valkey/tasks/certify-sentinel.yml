@@ -373,6 +373,7 @@
     msg:
       - "Valkey validation complete for {{ inventory_hostname }}"
       - "Overall Status: {{ 'PASSED ✓' if (valkey_sentinel_ping.rc == 0 and valkey_sentinel_process.rc == 0) else 'FAILED ✗' }}"
-      - "Report saved to: {{ valkey_sentinel_certify_report_file }} on both the remote and control nodes."
+      - "Remote report: {{ valkey_sentinel_certify_report_file }}"
+      - "Local report:  {{ valkey_sentinel_certify_report_dir_local }}/{{ valkey_sentinel_certify_report_file | basename }}"
   when:
     - valkey_sentinel_is_running | bool
