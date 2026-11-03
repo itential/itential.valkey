@@ -52,11 +52,11 @@
           ansible.builtin.assert:
             that:
               - ansible_os_family == 'RedHat'
-              - ansible_distribution_major_version in ['9', '2023']
+              - ansible_distribution_major_version in ['9', '10', '2023']
             fail_msg: >-
               Deployer does not support installing Valkey on
               {{ ansible_distribution }} {{ ansible_distribution_major_version | default('') }}.
-              Valkey is only supported on RHEL/Rocky/AlmaLinux 9 and Amazon Linux 2023, installed
+              Valkey is only supported on RHEL/Rocky/AlmaLinux 9/10 and Amazon Linux 2023, installed
               via the native OS package repositories. Use the redis role instead on EL8 or other
               platforms.
 

@@ -17,12 +17,12 @@ the rest of the platform stack: MongoDB, Itential Platform, Itential Gateway) on
 playbooks are intended to be merged directly into `itential.deployer`, and this repository
 will be archived.
 
-## Why Valkey, and why EL9/Amazon Linux 2023 only
+## Why Valkey, and why EL9/EL10/Amazon Linux 2023 only
 
 Redis relicensed away from a fully open-source model in 2024; Valkey is the community fork
 that stayed BSD-licensed. This role deliberately:
 
-- Installs **only** via the native OS package repositories (the AppStream module on EL9,
+- Installs **only** via the native OS package repositories (the AppStream module on EL9/EL10,
   Amazon Linux 2023's own core repo) — never Remi, never a source compile.
 - Does **not** support EL8 at all (no AppStream stream exists there, and this role does not
   compile from source to work around that).
@@ -64,7 +64,7 @@ all:
         valkey_tls_enabled: false
 ```
 
-`host01.example.com` must be RHEL/Rocky/AlmaLinux 9 or Amazon Linux 2023 — `valkey_master`
+`host01.example.com` must be RHEL/Rocky/AlmaLinux 9 or 10, or Amazon Linux 2023 — `valkey_master`
 fails fast on anything else (including EL8; use `itential.deployer`'s `redis` role there
 instead).
 

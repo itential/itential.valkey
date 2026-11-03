@@ -21,7 +21,7 @@ authors:
 ### OPTIONAL but strongly recommended
 # A short summary description of the collection
 description: >-
-  Ansible collection that installs and configures Valkey (a Remi-free, EL9/Amazon Linux 2023
+  Ansible collection that installs and configures Valkey (a Remi-free, EL9/EL10/Amazon Linux 2023
   AppStream-only alternative to Redis) for the Itential automation platform stack. Depends on
   itential.deployer for shared utility roles. Intended to be merged into itential.deployer once
   the redis role is retired.

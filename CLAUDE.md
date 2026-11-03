@@ -32,7 +32,7 @@ be merged directly into `itential.deployer`, and this repository archived. See
 
 | Role | Purpose |
 |------|---------|
-| `valkey` | Installs and configures Valkey (via the native OS package repositories only — EL9 AppStream or Amazon Linux 2023's core repo) and Valkey Sentinel: auth, TLS, replication. No source install, no Remi, no EL8 support, no relocatable install paths, no role-level SELinux step (handled entirely by the base OS policy). See `roles/valkey/CLAUDE.md` for full detail. |
+| `valkey` | Installs and configures Valkey (via the native OS package repositories only — EL9/EL10 AppStream or Amazon Linux 2023's core repo) and Valkey Sentinel: auth, TLS, replication. No source install, no Remi, no EL8 support, no relocatable install paths, no role-level SELinux step (handled entirely by the base OS policy). See `roles/valkey/CLAUDE.md` for full detail. |
 
 ## Cross-Collection Dependency
 
@@ -48,7 +48,7 @@ Installation section. This is declared in `galaxy.yml`'s `dependencies`.
 
 | File | Contents |
 |------|----------|
-| `docs/valkey_guide.md` | Valkey role variables, Sentinel, TLS, EL9/Amazon Linux 2023 native package install |
+| `docs/valkey_guide.md` | Valkey role variables, Sentinel, TLS, EL9/EL10/Amazon Linux 2023 native package install |
 
 ## CI
 
